@@ -4,7 +4,7 @@ import {addProduct, listProducts, removeProduct} from '../controllers/productCon
 
 const productRouter = express.Router()
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
     destination:"uploads",
     filename:(req,file,cb)=>{
         return cb(null,`${Date.now()} ${file.originalname}`)

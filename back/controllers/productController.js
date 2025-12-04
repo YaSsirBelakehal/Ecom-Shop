@@ -1,16 +1,22 @@
 import productModel from '../models/productModel.js'
 
-import fs from "fs"
+
 const addProduct = async(req,res)=>{
-    let image_filename = `${req.file.filename}`
+    try{
+
+    let imageData = ""
+    if(req.file){
+        imageData = req.file.buffer.toString("base64")
+    }
+
     const product = new productModel({
         name:req.body.name,
         description:req.body.description,
         price:req.body.price,
         category:req.body.category,
-        image:image_filename
+        image:imageData
     })
-    try{
+    
         await product.save()
         res.json({success:true, message:"Product Added"})
 
@@ -34,8 +40,10 @@ const listProducts = async(req,res)=>{
 const removeProduct = async(req,res)=>{
     try{
         const product = await productModel.findById(req.body.id)
-        console.log(req.body)
-        fs.unlink(`uploads/${product.image}` , ()=>{})
+        if(!product){
+            return res.json({success:false, message:"Product not found"})
+        }
+        
         await productModel.findByIdAndDelete(req.body.id)
         res.json({success:true , messageL:"Product Removed"})
 
